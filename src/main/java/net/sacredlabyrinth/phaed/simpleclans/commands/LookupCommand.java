@@ -54,7 +54,7 @@ public class LookupCommand {
         ClanPlayer targetCp = plugin.getClanManager().getAnyClanPlayer(playerName);
         ClanPlayer myCp = null;
         if (sender instanceof Player) {
-            myCp = plugin.getClanManager().getClanPlayer(sender.getName());
+            myCp = plugin.getClanManager().getClanPlayer(((Player)sender).getUniqueId());
         }
         Clan myClan = myCp == null ? null : myCp.getClan();
 
