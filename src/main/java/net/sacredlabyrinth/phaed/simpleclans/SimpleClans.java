@@ -50,8 +50,7 @@ public class SimpleClans extends JavaPlugin {
     /**
      * @param msg
      */
-    public static void debug(String msg)
-    {
+    public static void debug(String msg) {
         if (getInstance().getSettingsManager().isDebugging()) {
             logger.log(Level.INFO, msg);
         }
@@ -60,13 +59,11 @@ public class SimpleClans extends JavaPlugin {
     /**
      * @return the instance
      */
-    public static SimpleClans getInstance()
-    {
+    public static SimpleClans getInstance() {
         return instance;
     }
 
-    public static void log(String msg, Object... arg)
-    {
+    public static void log(String msg, Object... arg) {
         if (arg == null || arg.length == 0) {
             logger.log(Level.INFO, msg);
         } else {
@@ -75,8 +72,7 @@ public class SimpleClans extends JavaPlugin {
     }
 
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         instance = this;
 
         settingsManager = new SettingsManager();
@@ -113,93 +109,57 @@ public class SimpleClans extends JavaPlugin {
         getCommand(getSettingsManager().getCommandGlobal()).setExecutor(new GlobalCommandExecutor());
 
         getCommand(getSettingsManager().getCommandClan()).setTabCompleter(new PlayerNameTabCompleter());
-
-        pullMessages();
         logger.info("[SimpleClans] Online Mode: " + hasUUID);
         logger.info("[SimpleClans] Modo Multithreading: " + SimpleClans.getInstance().getSettingsManager().getUseThreads());
         logger.info("[SimpleClans] Modo BungeeCord: " + SimpleClans.getInstance().getSettingsManager().getUseBungeeCord());
     }
 
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         getServer().getScheduler().cancelTasks(this);
         getStorageManager().closeConnection();
         getPermissionsManager().savePermissions();
     }
 
-    public void pullMessages()
-    {
-        if (getSettingsManager().isDisableMessages())
-        {
-            return;
-        }
-
-        try
-        {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new URL("https://minecraftcubed.net/pluginmessage/").openStream()
-            		, StandardCharsets.UTF_8));
-
-            String message;
-            while ((message = in.readLine()) != null)
-            {
-                messages.add(message);
-                getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + message);
-            }
-            in.close();
-
-        }
-        catch (IOException e)
-        {
-            // do nothing
-        }
-    }
-
     /**
      * @return the clanManager
      */
-    public ClanManager getClanManager()
-    {
+    public ClanManager getClanManager() {
         return clanManager;
     }
 
     /**
      * @return the requestManager
      */
-    public RequestManager getRequestManager()
-    {
+    public RequestManager getRequestManager() {
         return requestManager;
     }
 
     /**
      * @return the storageManager
      */
-    public StorageManager getStorageManager()
-    {
+    public StorageManager getStorageManager() {
         return storageManager;
     }
 
     /**
      * @return the spoutManager
      */
-    public SpoutPluginManager getSpoutPluginManager()
-    {
+    public SpoutPluginManager getSpoutPluginManager() {
         return spoutPluginManager;
     }
 
     /**
      * @return the settingsManager
      */
-    public SettingsManager getSettingsManager()
-    {
+    public SettingsManager getSettingsManager() {
         return settingsManager;
     }
 
     /**
      * @return the permissionsManager
      */
-    public PermissionsManager getPermissionsManager()
-    {
+    public PermissionsManager getPermissionsManager() {
         return permissionsManager;
     }
 
@@ -214,29 +174,25 @@ public class SimpleClans extends JavaPlugin {
         return teleportManager;
     }
 
-    public List<String> getMessages()
-    {
+    public List<String> getMessages() {
         return messages;
     }
 
     /**
      * @return the hasUUID
      */
-    public boolean hasUUID()
-    {
+    public boolean hasUUID() {
         return this.hasUUID;
     }
 
     /**
      * @param trueOrFalse
      */
-    public void setUUID(boolean trueOrFalse)
-    {
+    public void setUUID(boolean trueOrFalse) {
         this.hasUUID = trueOrFalse;
     }
 
-    public LanguageManager getLanguageManager()
-    {
+    public LanguageManager getLanguageManager() {
         return languageManager;
     }
 }

@@ -1,14 +1,18 @@
 package net.sacredlabyrinth.phaed.simpleclans.managers;
 
+import com.wasteofplastic.askyblock.ASkyBlock;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.HashMap;
@@ -18,8 +22,7 @@ import java.util.Map;
 /**
  * @author phaed
  */
-public final class PermissionsManager
-{
+public final class PermissionsManager {
     /**
      *
      */
@@ -28,6 +31,7 @@ public final class PermissionsManager
     private static Permission permission = null;
     private static Economy economy = null;
     private static Chat chat = null;
+    private static ASkyBlock skyblock;
 
     private HashMap<String, List<String>> permissions = new HashMap<>();
     private HashMap<Player, PermissionAttachment> permAttaches = new HashMap<>();
@@ -36,21 +40,29 @@ public final class PermissionsManager
     /**
      *
      */
-    public PermissionsManager()
-    {
+    public PermissionsManager() {
         plugin = SimpleClans.getInstance();
 
-        try
-        {
+        try {
             Class.forName("net.milkbowl.vault.permission.Permission");
 
             setupChat();
             setupEconomy();
             setupPermissions();
-        }
-        catch (ClassNotFoundException e)
-        {
+        } catch (ClassNotFoundException e) {
             SimpleClans.log("[PreciousStones] Vault not found. No economy or extended Permissions support.");
+        }
+
+        detectSkyBlock();
+    }
+
+    private void detectSkyBlock() {
+        if (skyblock == null) {
+            Plugin test = plugin.getServer().getPluginManager().getPlugin("ASkyBlock");
+
+            if (test != null) {
+                skyblock = ((ASkyBlock) test);
+            }
         }
     }
 
@@ -59,20 +71,17 @@ public final class PermissionsManager
      *
      * @return
      */
-    public boolean hasEconomy()
-    {
+    public boolean hasEconomy() {
         return economy != null && economy.isEnabled();
     }
 
     /**
      * Loads the permissions for each clan from the config
      */
-    public void loadPermissions()
-    {
+    public void loadPermissions() {
         SimpleClans.getInstance().getSettingsManager().load();
         permissions.clear();
-        for (Clan clan : plugin.getClanManager().getClans())
-        {
+        for (Clan clan : plugin.getClanManager().getClans()) {
             permissions.put(clan.getTag(), SimpleClans.getInstance().getConfig().getStringList("permissions." + clan.getTag()));
         }
     }
@@ -80,12 +89,9 @@ public final class PermissionsManager
     /**
      * Saves the permissions for earch clan from the config
      */
-    public void savePermissions()
-    {
-        for (Clan clan : plugin.getClanManager().getClans())
-        {
-            if (permissions.containsKey(clan.getTag()))
-            {
+    public void savePermissions() {
+        for (Clan clan : plugin.getClanManager().getClans()) {
+            if (permissions.containsKey(clan.getTag())) {
                 SimpleClans.getInstance().getSettingsManager().getConfig().set("permissions." + clan.getTag(), getPermissions(clan));
             }
         }
@@ -97,10 +103,8 @@ public final class PermissionsManager
      *
      * @param clan
      */
-    public void updateClanPermissions(Clan clan)
-    {
-        for (ClanPlayer cp : clan.getMembers())
-        {
+    public void updateClanPermissions(Clan clan) {
+        for (ClanPlayer cp : clan.getMembers()) {
             addPlayerPermissions(cp);
         }
     }
@@ -110,24 +114,18 @@ public final class PermissionsManager
      *
      * @param cp
      */
-    public void addPlayerPermissions(ClanPlayer cp)
-    {
-        if (cp != null && cp.toPlayer() != null)
-        {
+    public void addPlayerPermissions(ClanPlayer cp) {
+        if (cp != null && cp.toPlayer() != null) {
             Player player = cp.toPlayer();
-            if (permissions.containsKey(cp.getClan().getTag()))
-            {
-                if (!permAttaches.containsKey(cp.toPlayer()))
-                {
+            if (permissions.containsKey(cp.getClan().getTag())) {
+                if (!permAttaches.containsKey(cp.toPlayer())) {
                     permAttaches.put(cp.toPlayer(), cp.toPlayer().addAttachment(SimpleClans.getInstance()));
                 }
                 //Adds all permisisons from his clan
-                for (String perm : getPermissions(cp.getClan()))
-                {
+                for (String perm : getPermissions(cp.getClan())) {
                     permAttaches.get(cp.toPlayer()).setPermission(perm, true);
                 }
-                if (plugin.getSettingsManager().isAutoGroupGroupName())
-                {
+                if (plugin.getSettingsManager().isAutoGroupGroupName()) {
                     permAttaches.get(cp.toPlayer()).setPermission("group." + cp.getClan().getTag(), true);
                 }
                 player.recalculatePermissions();
@@ -140,10 +138,8 @@ public final class PermissionsManager
      *
      * @param clan
      */
-    public void removeClanPermissions(Clan clan)
-    {
-        for (ClanPlayer cp : clan.getMembers())
-        {
+    public void removeClanPermissions(Clan clan) {
+        for (ClanPlayer cp : clan.getMembers()) {
             removeClanPlayerPermissions(cp);
         }
     }
@@ -153,14 +149,11 @@ public final class PermissionsManager
      *
      * @param cp
      */
-    public void removeClanPlayerPermissions(ClanPlayer cp)
-    {
-        if (cp != null && cp.getClan() != null && cp.toPlayer() != null)
-        {
-        	Player player = cp.toPlayer();
-            if (player.isOnline() && permissions.containsKey(cp.getClan().getTag()) && permAttaches.containsKey(player))
-            {
-            	permAttaches.get(player).remove();
+    public void removeClanPlayerPermissions(ClanPlayer cp) {
+        if (cp != null && cp.getClan() != null && cp.toPlayer() != null) {
+            Player player = cp.toPlayer();
+            if (player.isOnline() && permissions.containsKey(cp.getClan().getTag()) && permAttaches.containsKey(player)) {
+                permAttaches.get(player).remove();
                 permAttaches.remove(player);
             }
         }
@@ -170,8 +163,7 @@ public final class PermissionsManager
      * @param clan
      * @return the permissions for a clan
      */
-    public List<String> getPermissions(Clan clan)
-    {
+    public List<String> getPermissions(Clan clan) {
         return permissions.get(clan.getTag());
     }
 
@@ -179,8 +171,7 @@ public final class PermissionsManager
     /**
      * @return the PermissionsAttachments for every player
      */
-    public Map<Player, PermissionAttachment> getPermAttaches()
-    {
+    public Map<Player, PermissionAttachment> getPermAttaches() {
         return permAttaches;
     }
 
@@ -191,8 +182,7 @@ public final class PermissionsManager
      * @param money
      * @return
      */
-    public boolean playerChargeMoney(Player player, double money)
-    {
+    public boolean playerChargeMoney(Player player, double money) {
         return economy.withdrawPlayer(player.getName(), money).transactionSuccess();
     }
 
@@ -203,8 +193,7 @@ public final class PermissionsManager
      * @param money
      * @return
      */
-    public boolean playerGrantMoney(Player player, double money)
-    {
+    public boolean playerGrantMoney(Player player, double money) {
         return economy.depositPlayer(player.getName(), money).transactionSuccess();
     }
 
@@ -215,8 +204,7 @@ public final class PermissionsManager
      * @param money
      * @return
      */
-    public boolean playerGrantMoney(String player, double money)
-    {
+    public boolean playerGrantMoney(String player, double money) {
         return economy.depositPlayer(player, money).transactionSuccess();
     }
 
@@ -227,8 +215,7 @@ public final class PermissionsManager
      * @param money
      * @return whether he has the money
      */
-    public boolean playerHasMoney(Player player, double money)
-    {
+    public boolean playerHasMoney(Player player, double money) {
         return economy.has(player.getName(), money);
     }
 
@@ -238,32 +225,26 @@ public final class PermissionsManager
      * @param player
      * @return the players money
      */
-    public double playerGetMoney(Player player)
-    {
+    public double playerGetMoney(Player player) {
         return economy.getBalance(player.getName());
     }
 
     /**
-     * Check if a player has permissions
+     * Check if a sender has permissions
      *
-     * @param player the player
+     * @param sender the sender
      * @param perm   the permission
      * @return whether he has the permission
      */
-    public boolean has(Player player, String perm)
-    {
-        if (player == null)
-        {
+    public boolean has(CommandSender sender, String perm) {
+        if (sender == null) {
             return false;
         }
 
-        if (permission != null)
-        {
-            return permission.has(player, perm);
-        }
-        else
-        {
-            return player.hasPermission(perm);
+        if (permission != null) {
+            return permission.has(sender, perm);
+        } else {
+            return sender.hasPermission(perm);
         }
     }
 
@@ -272,28 +253,20 @@ public final class PermissionsManager
      *
      * @param cp
      */
-    public void addClanPermissions(ClanPlayer cp)
-    {
-        if (!plugin.getSettingsManager().isEnableAutoGroups())
-        {
+    public void addClanPermissions(ClanPlayer cp) {
+        if (!plugin.getSettingsManager().isEnableAutoGroups()) {
             return;
         }
 
-        if (permission != null)
-        {
-            if (cp != null && cp.toPlayer() != null)
-            {
-                if (cp.getClan() != null)
-                {
-                    if (!permission.playerInGroup(cp.toPlayer(), "clan." + cp.getTag()))
-                    {
+        if (permission != null) {
+            if (cp != null && cp.toPlayer() != null) {
+                if (cp.getClan() != null) {
+                    if (!permission.playerInGroup(cp.toPlayer(), "clan." + cp.getTag())) {
                         permission.playerAddGroup(cp.toPlayer(), "clan." + cp.getTag());
                     }
 
-                    if (cp.isLeader())
-                    {
-                        if (!permission.playerInGroup(cp.toPlayer(), "sc.leader"))
-                        {
+                    if (cp.isLeader()) {
+                        if (!permission.playerInGroup(cp.toPlayer(), "sc.leader")) {
                             permission.playerAddGroup(cp.toPlayer(), "sc.leader");
                         }
                         permission.playerRemoveGroup(cp.toPlayer(), "sc.untrusted");
@@ -301,10 +274,8 @@ public final class PermissionsManager
                         return;
                     }
 
-                    if (cp.isTrusted())
-                    {
-                        if (!permission.playerInGroup(cp.toPlayer(), "sc.trusted"))
-                        {
+                    if (cp.isTrusted()) {
+                        if (!permission.playerInGroup(cp.toPlayer(), "sc.trusted")) {
                             permission.playerAddGroup(cp.toPlayer(), "sc.trusted");
                         }
                         permission.playerRemoveGroup(cp.toPlayer(), "sc.untrusted");
@@ -312,15 +283,12 @@ public final class PermissionsManager
                         return;
                     }
 
-                    if (!permission.playerInGroup(cp.toPlayer(), "sc.untrusted"))
-                    {
+                    if (!permission.playerInGroup(cp.toPlayer(), "sc.untrusted")) {
                         permission.playerAddGroup(cp.toPlayer(), "sc.untrusted");
                     }
                     permission.playerRemoveGroup(cp.toPlayer(), "sc.trusted");
                     permission.playerRemoveGroup(cp.toPlayer(), "sc.leader");
-                }
-                else
-                {
+                } else {
                     permission.playerRemoveGroup(cp.toPlayer(), "sc.untrusted");
                     permission.playerRemoveGroup(cp.toPlayer(), "sc.trusted");
                     permission.playerRemoveGroup(cp.toPlayer(), "sc.leader");
@@ -334,48 +302,39 @@ public final class PermissionsManager
      *
      * @param cp
      */
-    public void removeClanPermissions(ClanPlayer cp)
-    {
-        if (!plugin.getSettingsManager().isEnableAutoGroups())
-        {
+    public void removeClanPermissions(ClanPlayer cp) {
+        if (!plugin.getSettingsManager().isEnableAutoGroups()) {
             return;
         }
 
-        if (permission != null && cp.toPlayer() != null)
-        {
-        	permission.playerRemoveGroup(cp.toPlayer(), "clan." + cp.getTag());
+        if (permission != null && cp.toPlayer() != null) {
+            permission.playerRemoveGroup(cp.toPlayer(), "clan." + cp.getTag());
             permission.playerRemoveGroup(cp.toPlayer(), "sc.untrusted");
             permission.playerRemoveGroup(cp.toPlayer(), "sc.trusted");
             permission.playerRemoveGroup(cp.toPlayer(), "sc.leader");
         }
     }
 
-    private Boolean setupPermissions()
-    {
+    private Boolean setupPermissions() {
         RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null)
-        {
+        if (permissionProvider != null) {
             permission = permissionProvider.getProvider();
         }
         return permission != null;
     }
 
-    private Boolean setupChat()
-    {
+    private Boolean setupChat() {
         RegisteredServiceProvider<Chat> chatProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if (chatProvider != null)
-        {
+        if (chatProvider != null) {
             chat = chatProvider.getProvider();
         }
 
         return chat != null;
     }
 
-    private Boolean setupEconomy()
-    {
+    private Boolean setupEconomy() {
         RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null)
-        {
+        if (economyProvider != null) {
             economy = economyProvider.getProvider();
         }
 
@@ -387,43 +346,32 @@ public final class PermissionsManager
      * @return
      */
     @SuppressWarnings({"deprecation", "deprecation"})
-    public String getPrefix(Player p)
-    {
+    public String getPrefix(Player p) {
         String out = "";
 
-        try
-        {
-            if (chat != null)
-            {
+        try {
+            if (chat != null) {
                 out = chat.getPlayerPrefix(p);
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // yea vault kinda sucks like that
         }
 
-        if (permission != null && chat != null)
-        {
-            try
-            {
+        if (permission != null && chat != null) {
+            try {
                 String world = p.getWorld().getName();
                 String name = p.getName();
                 String prefix = chat.getPlayerPrefix(name, world);
-                if (prefix == null || prefix.isEmpty())
-                {
+                if (prefix == null || prefix.isEmpty()) {
                     String group = permission.getPrimaryGroup(world, name);
                     prefix = chat.getGroupPrefix(world, group);
-                    if (prefix == null)
-                    {
+                    if (prefix == null) {
                         prefix = "";
                     }
                 }
 
                 out = prefix.replace("&", "\u00a7").replace(String.valueOf((char) 194), "");
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -447,40 +395,29 @@ public final class PermissionsManager
      * @return
      */
     @SuppressWarnings({"deprecation", "deprecation"})
-    public String getSuffix(Player p)
-    {
-        try
-        {
-            if (chat != null)
-            {
+    public String getSuffix(Player p) {
+        try {
+            if (chat != null) {
                 return chat.getPlayerSuffix(p);
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             // yea vault kinda sucks like that
         }
 
-        if (permission != null && chat != null)
-        {
-            try
-            {
+        if (permission != null && chat != null) {
+            try {
                 String world = p.getWorld().getName();
                 String name = p.getName();
                 String suffix = chat.getPlayerSuffix(world, name);
-                if (suffix == null || suffix.isEmpty())
-                {
+                if (suffix == null || suffix.isEmpty()) {
                     String group = permission.getPrimaryGroup(world, name);
                     suffix = chat.getPlayerSuffix(world, group);
-                    if (suffix == null)
-                    {
+                    if (suffix == null) {
                         suffix = "";
                     }
                 }
                 return suffix.replace("&", "\u00a7").replace(String.valueOf((char) 194), "");
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
                 return "";
             }
