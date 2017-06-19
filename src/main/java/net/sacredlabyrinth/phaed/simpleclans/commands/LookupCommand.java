@@ -35,6 +35,10 @@ public class LookupCommand {
                 ChatBlock.sendMessage(sender, ChatColor.RED + plugin.getLang("insufficient.permissions"));
                 return;
             }
+            if (!(sender instanceof Player)) {
+                ChatBlock.sendMessage(sender, ChatColor.RED + "You must specify a player name if you wish to use this command from the console.");
+                return;
+            }
             playerName = sender.getName();
         } else if (arg.length == 1) {
             if (!plugin.getPermissionsManager().has(sender, "simpleclans.anyone.lookup")) {
@@ -48,7 +52,10 @@ public class LookupCommand {
         }
 
         ClanPlayer targetCp = plugin.getClanManager().getAnyClanPlayer(playerName);
-        ClanPlayer myCp = plugin.getClanManager().getClanPlayer(sender.getName());
+        ClanPlayer myCp = null;
+        if (sender instanceof Player) {
+            myCp = plugin.getClanManager().getClanPlayer(sender.getName());
+        }
         Clan myClan = myCp == null ? null : myCp.getClan();
 
         if (targetCp != null) {
