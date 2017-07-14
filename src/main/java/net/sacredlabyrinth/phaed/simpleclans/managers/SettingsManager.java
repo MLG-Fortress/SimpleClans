@@ -430,7 +430,7 @@ public final class SettingsManager {
             playerName = UUIDMigration.getForcedPlayerUUID(playerName).toString();
         }
         if (!bannedPlayers.contains(playerName)) {
-            getBannedPlayers().add(playerName);
+            bannedPlayers.add(playerName);
         }
 
         save();
@@ -447,7 +447,7 @@ public final class SettingsManager {
             playerName = UUIDMigration.getForcedPlayerUUID(playerName).toString();
         }
         if (getBannedPlayers().contains(playerName)) {
-            getBannedPlayers().remove(playerName);
+            bannedPlayers.remove(playerName);
         }
 
         save();
@@ -476,7 +476,7 @@ public final class SettingsManager {
      */
     public void addBanned(UUID playerUniqueId) {
         if (!bannedPlayers.contains(playerUniqueId.toString())) {
-            getBannedPlayers().add(playerUniqueId.toString());
+            bannedPlayers.add(playerUniqueId.toString());
         }
 
         save();
@@ -489,7 +489,7 @@ public final class SettingsManager {
      */
     public void removeBanned(UUID playerUniqueId) {
         if (getBannedPlayers().contains(playerUniqueId.toString())) {
-            getBannedPlayers().remove(playerUniqueId.toString());
+            bannedPlayers.remove(playerUniqueId.toString());
         }
 
         save();
