@@ -227,9 +227,7 @@ public final class ClanCommandExecutor implements CommandExecutor {
             }
         } catch (Exception ex) {
             SimpleClans.getInstance().getServer().getConsoleSender().sendMessage(ChatColor.RED + MessageFormat.format(plugin.getLang("simpleclans.command.failure"), ex.getMessage()));
-            for (StackTraceElement el : ex.getStackTrace()) {
-                System.out.print(el.toString());
-            }
+            ex.printStackTrace();
         }
 
         return false;
