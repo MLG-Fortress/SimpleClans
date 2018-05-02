@@ -304,6 +304,7 @@ public final class SettingsManager {
         kwRival = getConfig().getDouble("kill-weights.rival");
         kwNeutral = getConfig().getDouble("kill-weights.neutral");
         kwCivilian = getConfig().getDouble("kill-weights.civilian");
+        denySameIPKills = getConfig().getBoolean("kill-weights.deny-same-ip-kills");
         useMysql = getConfig().getBoolean("mysql.enable");
         host = getConfig().getString("mysql.host");
         port = getConfig().getInt("mysql.port");
