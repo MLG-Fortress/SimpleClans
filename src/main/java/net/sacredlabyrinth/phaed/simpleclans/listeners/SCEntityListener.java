@@ -78,6 +78,10 @@ public class SCEntityListener implements Listener
 
             if (attacker != null && victim != null)
             {
+            	if (SimpleClans.getInstance().getSettingsManager().isDenySameIPKills()) {
+            		if (attacker.getAddress().getHostString() == victim.getAddress().getHostString()) return;
+            	}
+            	            
                 ClanPlayer acp;
                 ClanPlayer vcp;
                 if (SimpleClans.getInstance().hasUUID())
