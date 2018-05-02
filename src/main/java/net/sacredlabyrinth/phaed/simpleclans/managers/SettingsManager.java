@@ -196,7 +196,6 @@ public final class SettingsManager {
         mChatIntegration = getConfig().getBoolean("settings.mchat-integration");
         pvpOnlywhileInWar = getConfig().getBoolean("settings.pvp-only-while-at-war");
         enableAutoGroups = getConfig().getBoolean("settings.enable-auto-groups");
-        denySameIPKills = getConfig().getBoolean("settings.deny-same-ip-kills");
         useColorCodeFromPrefix = getConfig().getBoolean("settings.use-colorcode-from-prefix-for-name");
         bannedPlayers = getConfig().getStringList("settings.banned-players");
         allowResetKdr = getConfig().getBoolean("settings.allow-reset-kdr");
