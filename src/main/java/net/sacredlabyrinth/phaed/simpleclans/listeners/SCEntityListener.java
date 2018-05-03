@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.text.MessageFormat;
+import java.util.logging.Level;
 
 /**
  * @author phaed
@@ -78,8 +79,14 @@ public class SCEntityListener implements Listener
 
             if (attacker != null && victim != null)
             {
-            	if (SimpleClans.getInstance().getSettingsManager().isDenySameIPKills()) {
-            		if (attacker.getAddress().getHostString() == victim.getAddress().getHostString()) return;
+            	if (SimpleClans.getInstance().getSettingsManager().isDenySameIPKills()) 
+            	{
+            		if (attacker.getAddress().getHostString().equals(victim.getAddress().getHostString())) 
+            		{
+            			plugin.getLogger().log(Level.INFO, "Blocked same IP kill calculating: {0} killed {1}. IP: {2}", new Object[]{attacker.getDisplayName(), victim.getDisplayName(), attacker.getAddress().getHostString()});
+            			return;
+            			
+            		}
             	}
             	            
                 ClanPlayer acp;
