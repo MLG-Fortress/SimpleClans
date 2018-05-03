@@ -83,7 +83,9 @@ public class SCEntityListener implements Listener
             	{
             		if (attacker.getAddress().getHostString().equals(victim.getAddress().getHostString())) 
             		{
-            			plugin.getLogger().log(Level.INFO, "Blocked same IP kill calculating: {0} killed {1}. IP: {2}", new Object[]{attacker.getDisplayName(), victim.getDisplayName(), attacker.getAddress().getHostString()});
+            			plugin.getLogger().log(Level.INFO, "Blocked same IP kill calculating: {0} killed {1}. IP: {2}", new Object[]{
+                                    attacker.getDisplayName(), victim.getDisplayName(), attacker.getAddress().getHostString()
+                                });
             			return;
             			
             		}
