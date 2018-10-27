@@ -1,17 +1,13 @@
 package net.sacredlabyrinth.phaed.simpleclans.managers;
 
-import com.wasteofplastic.askyblock.ASkyBlock;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
-import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
-
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.HashMap;
@@ -30,7 +26,6 @@ public final class PermissionsManager {
     private static Permission permission = null;
     private static Economy economy = null;
     private static Chat chat = null;
-    private static ASkyBlock skyblock;
 
     private HashMap<String, List<String>> permissions = new HashMap<>();
     private HashMap<Player, PermissionAttachment> permAttaches = new HashMap<>();
@@ -50,18 +45,6 @@ public final class PermissionsManager {
             setupPermissions();
         } catch (ClassNotFoundException e) {
             SimpleClans.log("[SimpleClans] Vault not found. No economy or extended Permissions support.");
-        }
-
-        detectSkyBlock();
-    }
-
-    private void detectSkyBlock() {
-        if (skyblock == null) {
-            Plugin test = plugin.getServer().getPluginManager().getPlugin("ASkyBlock");
-
-            if (test != null) {
-                skyblock = ((ASkyBlock) test);
-            }
         }
     }
 
