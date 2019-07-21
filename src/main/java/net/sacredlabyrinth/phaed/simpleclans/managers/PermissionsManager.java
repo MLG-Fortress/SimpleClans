@@ -6,6 +6,7 @@ import net.milkbowl.vault.permission.Permission;
 import net.sacredlabyrinth.phaed.simpleclans.Clan;
 import net.sacredlabyrinth.phaed.simpleclans.ClanPlayer;
 import net.sacredlabyrinth.phaed.simpleclans.SimpleClans;
+
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -13,11 +14,13 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.OfflinePlayer;
 
 /**
  * @author phaed
  */
 public final class PermissionsManager {
+
     /**
      *
      */
@@ -29,7 +32,6 @@ public final class PermissionsManager {
 
     private HashMap<String, List<String>> permissions = new HashMap<>();
     private HashMap<Player, PermissionAttachment> permAttaches = new HashMap<>();
-
 
     /**
      *
@@ -149,7 +151,6 @@ public final class PermissionsManager {
         return permissions.get(clan.getTag());
     }
 
-
     /**
      * @return the PermissionsAttachments for every player
      */
@@ -165,7 +166,7 @@ public final class PermissionsManager {
      * @return
      */
     public boolean playerChargeMoney(Player player, double money) {
-        return economy.withdrawPlayer(player.getName(), money).transactionSuccess();
+        return economy.withdrawPlayer(player, money).transactionSuccess();
     }
 
     /**
@@ -176,7 +177,7 @@ public final class PermissionsManager {
      * @return
      */
     public boolean playerGrantMoney(Player player, double money) {
-        return economy.depositPlayer(player.getName(), money).transactionSuccess();
+        return economy.depositPlayer(player, money).transactionSuccess();
     }
 
     /**
@@ -186,7 +187,19 @@ public final class PermissionsManager {
      * @param money
      * @return
      */
+    @Deprecated
     public boolean playerGrantMoney(String player, double money) {
+        return economy.depositPlayer(player, money).transactionSuccess();
+    }
+
+    /**
+     * Grants a player some money
+     *
+     * @param player
+     * @param money
+     * @return
+     */
+    public boolean playerGrantMoney(OfflinePlayer player, double money) {
         return economy.depositPlayer(player, money).transactionSuccess();
     }
 
@@ -198,7 +211,7 @@ public final class PermissionsManager {
      * @return whether he has the money
      */
     public boolean playerHasMoney(Player player, double money) {
-        return economy.has(player.getName(), money);
+        return economy.has(player, money);
     }
 
     /**
@@ -208,14 +221,14 @@ public final class PermissionsManager {
      * @return the players money
      */
     public double playerGetMoney(Player player) {
-        return economy.getBalance(player.getName());
+        return economy.getBalance(player);
     }
 
     /**
      * Check if a player has permissions
      *
      * @param player the player
-     * @param perm   the permission
+     * @param perm the permission
      * @return whether he has the permission
      */
     public boolean has(Player player, String perm) {
@@ -327,7 +340,6 @@ public final class PermissionsManager {
      * @param p
      * @return
      */
-    @SuppressWarnings({"deprecation", "deprecation"})
     public String getPrefix(Player p) {
         String out = "";
 
@@ -342,10 +354,9 @@ public final class PermissionsManager {
         if (permission != null && chat != null) {
             try {
                 String world = p.getWorld().getName();
-                String name = p.getName();
-                String prefix = chat.getPlayerPrefix(name, world);
+                String prefix = chat.getPlayerPrefix(world, p);
                 if (prefix == null || prefix.isEmpty()) {
-                    String group = permission.getPrimaryGroup(world, name);
+                    String group = permission.getPrimaryGroup(world, p);
                     prefix = chat.getGroupPrefix(world, group);
                     if (prefix == null) {
                         prefix = "";
@@ -367,8 +378,7 @@ public final class PermissionsManager {
         {
             out += ((ColorMe) colorMe).getColor(p.getName());
         }
-        */
-
+         */
         return out;
     }
 
@@ -376,7 +386,6 @@ public final class PermissionsManager {
      * @param p
      * @return
      */
-    @SuppressWarnings({"deprecation", "deprecation"})
     public String getSuffix(Player p) {
         try {
             if (chat != null) {
@@ -389,11 +398,10 @@ public final class PermissionsManager {
         if (permission != null && chat != null) {
             try {
                 String world = p.getWorld().getName();
-                String name = p.getName();
-                String suffix = chat.getPlayerSuffix(world, name);
+                String suffix = chat.getPlayerSuffix(world, p);
                 if (suffix == null || suffix.isEmpty()) {
-                    String group = permission.getPrimaryGroup(world, name);
-                    suffix = chat.getPlayerSuffix(world, group);
+                    String group = permission.getPrimaryGroup(world, p);
+                    suffix = chat.getGroupSuffix(world, group);
                     if (suffix == null) {
                         suffix = "";
                     }
