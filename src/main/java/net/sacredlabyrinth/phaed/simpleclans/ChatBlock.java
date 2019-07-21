@@ -607,6 +607,10 @@ public class ChatBlock {
         }
     }
 
+    public static String[] getColorizedMessage(String msg) {
+        return colorize(wordWrap(msg));
+    }
+
     /**
      * Send blank lie
      *
