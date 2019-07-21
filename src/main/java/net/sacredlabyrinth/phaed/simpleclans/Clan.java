@@ -1555,7 +1555,7 @@ public class Clan implements Serializable, Comparable<Clan> {
             msg = String.join("", ChatBlock.getColorizedMessage(SimpleClans.getInstance().getSettingsManager().getBbAccentColor() + "* " + SimpleClans.getInstance().getSettingsManager().getBbColor() + Helper.parseColors(msg.substring(++index, msg.length()))));
             TextComponent textComponent = new TextComponent(msg);
             textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Dates.formatTime(time, 1) + " ago ")));
-            player.sendMessage(textComponent);
+            player.spigot().sendMessage(textComponent);
             return true;
         }
         catch (Throwable rock) {
